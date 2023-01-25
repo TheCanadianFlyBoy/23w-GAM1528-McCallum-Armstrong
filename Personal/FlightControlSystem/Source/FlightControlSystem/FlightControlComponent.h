@@ -57,6 +57,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Flight Model")
 		float YawRate;
 	//Input Storage
+	FRotator FlightAmounts;
 	FRotator FlightInputs;
 	float ThrottleAmount;
 	float ThrottleInput;

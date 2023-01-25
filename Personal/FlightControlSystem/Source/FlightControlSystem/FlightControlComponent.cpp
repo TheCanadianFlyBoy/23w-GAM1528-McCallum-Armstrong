@@ -18,7 +18,8 @@ UFlightControlComponent::UFlightControlComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	//Enter defaults
-	FlightInputs = FRotator(0);
+	FlightInputs = FRotator(0.f);
+	FlightAmounts = FRotator(0.f);
 
 	PitchRate = 35.f;
 	YawRate = 25.f;
@@ -94,9 +95,11 @@ void UFlightControlComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	//Debug
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Inputs" + FlightInputs.ToString());
-	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, "Up" + Owner->GetActorUpVector().ToCompactString());
 	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, "Throttle" + FString::SanitizeFloat(ThrottleAmount));
+	GEngine->AddOnScreenDebugMessage(-1, 0.01f, FColor::Green, "Rotation" + FlightAmounts.ToCompactString());
+
+	//Declare Rotators for later usage
+	FRotator PitchRotator, RollRotator, YawRotator;
 	switch (CurrentFlightModel)
 	{
 		//** ANALOG FLIGHT MODEL **//
@@ -104,23 +107,16 @@ void UFlightControlComponent::TickComponent(float DeltaTime, ELevelTick TickType
 		{
 			//Throttle calculations
 			ThrottleAmount = FMath::Clamp(ThrottleAmount + ThrottleInput * Acceleration, MinSpeed, MaxSpeed); //SYNC TO DELTA TIME
-			Owner->AddActorLocalOffset(FVector(ThrottleAmount * DeltaTime, 0, 0));
 			//Rotation calculation
-			FRotator PitchRotator, RollRotator, YawRotator;
-			PitchRotator = FRotator(			FlightInputs.Pitch * PitchRate * DeltaTime,			0,	0);
-			RollRotator = FRotator(0.f, 0.f,	FlightInputs.Roll * RollRate * DeltaTime				 );
-			YawRotator = FRotator(0.f,			FlightInputs.Yaw * YawRate * DeltaTime,				  0.f);
-			//Do Rotation
-			Owner->AddActorLocalRotation(PitchRotator);
-			Owner->AddActorLocalRotation(RollRotator);
-			Owner->AddActorLocalRotation(YawRotator);
-	
-			AudioComponent->SetPitchMultiplier(ThrottleAmount / MaxSpeed * 2);
+			FlightAmounts = FRotator	(	FMath::Lerp(FlightAmounts.Pitch, PitchRate * FlightInputs.Pitch, DeltaTime),
+											FMath::Lerp(FlightAmounts.Yaw, PitchRate * FlightInputs.Yaw, DeltaTime),
+											FMath::Lerp(FlightAmounts.Roll, PitchRate * FlightInputs.Roll, DeltaTime));
 			break;
 		}
 		//** ARCADE FLIGHT MODEL **//
 		case EFlightModelType::Arcade:
 		{
+			//Throttle Calculations
 			float DeltaThrottle = MaxSpeed - MinSpeed / 2;
 			if (ThrottleInput > 0)
 			{
@@ -133,25 +129,25 @@ void UFlightControlComponent::TickComponent(float DeltaTime, ELevelTick TickType
 			else {
 				ThrottleAmount = FMath::Lerp(ThrottleAmount, DeltaThrottle, DeltaTime);
 			}
-			Owner->AddActorLocalOffset(FVector(ThrottleAmount * DeltaTime, 0, 0));
-			//Rotation
-			FRotator PitchRotator, RollRotator, YawRotator;
-			PitchRotator = FRotator(FlightInputs.Pitch * PitchRate * DeltaTime, 0, 0);
-			RollRotator = FRotator(0.f, 0.f, FlightInputs.Roll * RollRate * DeltaTime);
-			YawRotator = FRotator(0.f, FlightInputs.Yaw * YawRate * DeltaTime, 0.f);
-			//Do Rotation
-			Owner->AddActorLocalRotation(PitchRotator);
-			Owner->AddActorLocalRotation(RollRotator);
-			Owner->AddActorLocalRotation(YawRotator);
-
-			AudioComponent->SetPitchMultiplier(ThrottleAmount / MaxSpeed * 2);
+			//Rotation calculations
+			FlightAmounts = FRotator(FMath::Lerp(FlightAmounts.Pitch, PitchRate * FlightInputs.Pitch, DeltaTime),
+									 FMath::Lerp(FlightAmounts.Yaw, PitchRate * FlightInputs.Yaw, DeltaTime),
+									 FMath::Lerp(FlightAmounts.Roll, PitchRate * FlightInputs.Roll, DeltaTime));
 			break;
 		}
 	}
-	
-	//AudioComponent->Play();
-
-	// ...
+	//Commit to thrust
+	Owner->AddActorLocalOffset(FVector(ThrottleAmount * DeltaTime, 0, 0));
+	//Commit to rotation
+	PitchRotator = FRotator(			FlightAmounts.Pitch * DeltaTime * MinSpeed*2/ThrottleAmount, 0,	0);
+	RollRotator = FRotator(0.f, 0.f,	FlightAmounts.Roll * DeltaTime	* MinSpeed*2/ThrottleAmount);
+	YawRotator = FRotator(0.f,			FlightAmounts.Yaw * DeltaTime * MinSpeed*2/ThrottleAmount	, 0.f);
+	//Add rotation
+	Owner->AddActorLocalRotation(PitchRotator);
+	Owner->AddActorLocalRotation(RollRotator);
+	Owner->AddActorLocalRotation(YawRotator);
+	//Set audio pitch
+	AudioComponent->SetPitchMultiplier(ThrottleAmount / MaxSpeed * 2);
 }
 
 //Called to setup inputs
