@@ -1,0 +1,129 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><element><id>UMLClass</id><coordinates><x>440</x><y>370</y><w>230</w><h>160</h></coordinates><panel_attributes>&lt;&lt;AGameStateBase&gt;&gt;
+ATPGameStateBase
+--
++ GameTime : int
+--
++ ATPGameStateBase()
+
+# &lt;virtual override&gt; BeginPlay() : void
+
+# SetGameTime() : void</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>260</x><y>0</y><w>820</w><h>330</h></coordinates><panel_attributes>&lt;&lt;AGameModeBase&gt;&gt;
+AThirdPersonGameMode
+--
+
+--
+AThirdPersonGameMode();
+
++ &lt;virtual override&gt; PreLogin(Options : const FString&amp;, Address : const FString&amp;, UniqueId : const FUniqueNetIdRepl&amp;, ErrorMessage : FString&amp;) : void 
+
++ &lt;virtual override&gt; Login(NewPlayer : UPlayer*, 
+                                          InRemoteRole : ENetRole, 
+                                          Portal : const FString&amp;, 
+                                          Options : const FString&amp;, 
+                                          UniqueId : const FUniqueNetIdRepl&amp;, 
+                                          ErrorMessage : FString&amp; ) : APlayerController*
+
++ &lt;virtual override&gt; PostLogin(NewPlayer : APlayerController*) : void 
+
++ &lt;virtual override&gt; RestartPlayer(AController* NewPlayer) :  void 
+
++ &lt;virtual override&gt; RestartPlayerAtPlayerStart(NewPlayer : AController*, StartSpot : AActor*) :  void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>970</x><y>600</y><w>210</w><h>120</h></coordinates><panel_attributes>&lt;&lt;APlayerController&gt;&gt;
+ATPPlayerController
+--
+
+--
+# &lt;virtual override&gt; BeginPlay() : void
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1750</x><y>630</y><w>340</w><h>460</h></coordinates><panel_attributes>&lt;&lt;AActor&gt;&gt;
+AThirdPersonProjectile
+--
+UPROPERTY(EditAnywhere, Category = "Effects")
++ ExplosionEffect : UParticleSystem* 
+
+UPROPERTY(EditAnywhere, Category = "Effects")
++ ExplosionSound : USoundBase*
+--
++ AThirdPersonProjectile()
+
++ &lt;virtual override&gt; Tick(DeltaTime : float) : void
+
+UFUNCTION(Category = "Projectile")
+# OnProjectileImpact(HitComponent : UPrimitiveComponent*, 
+                                   OtherActor : AActor* , 
+                                   OtherComp : UPrimitiveComponent*, 
+                                    NormalImpulse : FVector, 
+                                    Hit : const FHitResult&amp;) : void 
+
+# &lt;virtual override&gt; BeginPlay() : void
+
+# &lt;virtual override&gt; Destroyed() : void
+
+# PlayEffects() : void 
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>570</x><y>580</y><w>300</w><h>210</h></coordinates><panel_attributes>&lt;&lt;APlayerState&gt;&gt;
+ATPPlayerState
+--
++ PlayerName : FString
+--
++ ATPPlayerState()
+
++ SetName(Name : const FString&amp;) : void
+
+# &lt;virtual override&gt; BeginPlay() : void
+
+# &lt;virtual override&gt; PostInitializeComponents() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>1270</x><y>590</y><w>370</w><h>570</h></coordinates><panel_attributes>&lt;&lt;ACharacter&gt;&gt;
+AThirdPersonCharacter
+--
+UPROPERTY(VisibleAnywhere, Category="Display Text")
++ DisplayText : UTextRenderComponent*
+
++ PlayTime : int 
+
+UPROPERTY(EditDefaultsOnly, Category = "Gameplay")
+# FireRate : float
+
+UPROPERTY(EditDefaultsOnly, Category = "Gameplay|Projectile")
+# ProjectileClass : TSubclassOf&lt;class AThirdPersonProjectile&gt;
+
+# bIsFiringWeapon : bool
+
+# FiringTimer : FTimerHandle
+--
+UFUNCTION()
++ SetPlayTime() : void
+
++ DisplayPlayTime() : void
+
+# NetRoleToText(role : ENetRole) : FString
+
+UFUNCTION(BlueprintCallable, Category = "Gameplay")
+# StartFire() : void
+
+UFUNCTION(BlueprintCallable, Category = "Gameplay")
+# StopFire() : void
+
+# HandleFire() : void
+
+- SprintOn() : void
+
+- SprintOff() : void
+
+
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>520</x><y>520</y><w>70</w><h>220</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1..*
+has</panel_attributes><additional_attributes>10;10;10;190;50;190</additional_attributes></element><element><id>Relation</id><coordinates><x>860</x><y>660</y><w>130</w><h>50</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=1
+Associated to the</panel_attributes><additional_attributes>10;20;110;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1170</x><y>660</y><w>120</w><h>50</h></coordinates><panel_attributes>lt=-
+m1=1
+m2=1
+Associated to the</panel_attributes><additional_attributes>10;20;100;20</additional_attributes></element><element><id>Relation</id><coordinates><x>1623</x><y>783</y><w>150</w><h>40</h></coordinates><panel_attributes>lt=&lt;.
+Spawns</panel_attributes><additional_attributes>130;20;10;17</additional_attributes></element><element><id>Relation</id><coordinates><x>310</x><y>320</y><w>150</w><h>200</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+has
+
+
+</panel_attributes><additional_attributes>10;10;10;170;130;170</additional_attributes></element></diagram>
