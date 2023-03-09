@@ -22,7 +22,8 @@ APickup::APickup()
 	TextComponent->AddLocalOffset(FVector(0.f, 0.f, 200.f));
 	TextComponent->SetText(FText::FromString("Gib Gremndas"));
 
-	SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &APickup::RestoreGrenades);
+	if (GetLocalRole() == ROLE_Authority)
+		SphereComponent->OnComponentBeginOverlap.AddDynamic(this, &APickup::RestoreGrenades);
 
 }
 

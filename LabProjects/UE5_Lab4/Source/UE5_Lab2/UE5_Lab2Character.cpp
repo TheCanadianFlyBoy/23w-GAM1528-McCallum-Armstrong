@@ -167,11 +167,12 @@ void AUE5_Lab2Character::Grenade(const FInputActionValue& Value)
 
 void AUE5_Lab2Character::ThrowGrenade()
 {
-	Server_ThrowGrenade();
+		Server_ThrowGrenade();
 }
 
 void AUE5_Lab2Character::Server_ThrowGrenade_Implementation()
 {
+
 	if (GrenadeCount > 0) {
 		//Set spawn params
 		FActorSpawnParameters SpawnParams;
@@ -189,7 +190,7 @@ void AUE5_Lab2Character::Server_ThrowGrenade_Implementation()
 
 void AUE5_Lab2Character::UpdateCounter()
 {
-	GrenadeText->SetText(FText::FromString("Grenades: " + FString::FromInt(GrenadeCount)));
+		GrenadeText->SetText(FText::FromString("Grenades: " + FString::FromInt(GrenadeCount)));
 }
 
 void AUE5_Lab2Character::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

@@ -8,7 +8,7 @@ void ACustomPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    if (GameInfoBP)
+    if (GameInfoBP && IsLocalPlayerController())
     {
         GameInfoWidget = CreateWidget<UCustomUserWidget>(this, GameInfoBP);
         if (GameInfoWidget)

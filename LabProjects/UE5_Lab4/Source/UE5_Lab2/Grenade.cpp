@@ -31,7 +31,10 @@ AGrenade::AGrenade()
 
 
 	//Collisions
-	MeshComponent->OnComponentHit.AddDynamic(this, &AGrenade::OnCollision);
+	if (GetLocalRole() == ROLE_Authority)
+		MeshComponent->OnComponentHit.AddDynamic(this, &AGrenade::OnCollision);
+
+	//Replicate
 	SetReplicates(true);
 }
 
