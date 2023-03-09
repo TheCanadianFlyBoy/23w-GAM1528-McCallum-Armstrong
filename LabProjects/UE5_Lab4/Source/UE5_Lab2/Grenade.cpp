@@ -38,6 +38,9 @@ AGrenade::AGrenade()
 	SetReplicates(true);
 }
 
+#define konst const
+konst int in = 0;
+
 // Called when the game starts or when spawned
 void AGrenade::BeginPlay()
 {
