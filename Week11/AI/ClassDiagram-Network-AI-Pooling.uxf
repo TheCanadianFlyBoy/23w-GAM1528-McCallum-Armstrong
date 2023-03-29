@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.3.0">
+  <help_text>Space for diagram notes</help_text>
+  <zoom_level>8</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1240</x>
+      <y>104</y>
+      <w>296</w>
+      <h>392</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;APlayerController&gt;&gt;
+APlayerControllerDefault
+--
++ Character:ACharacterBase*
+--
+# APlayerControllerDefault()
+
+# &lt;virtual override&gt; SetupInputComponent();void
+
+# &lt;virtual override&gt; AcknowledgePossesion():void
+
+# &lt;virtual override&gt; BeginPlay():void
+
+-MoveVertical(Scale:float):void
+
+-MoveHorizontal(Scale:float):void
+
+-FirePressed():void
+
+-FireReleased():void
+
+-AimPressed():void
+
+-AimReleased():void
+
+-InteractPressed():void
+
+*- &lt;virtual override&gt; UnFreeze() : void*
+
+*# StartSpectating() : void*
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1688</x>
+      <y>104</y>
+      <w>408</w>
+      <h>1176</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ACharacter&gt;&gt;
+ACharacterBase
+--
+UPROPERTY(EditDefaultsOnly)
++MaxWalkSpeed:float
+
+UPROPERTY(EditDefaultsOnly)
++MaxJogSpeed:float
+
+UPROPERTY(EditDefaultsOnly)
++MaxPickUpDistance:float
+
+UPROPERTY(EditDefaultsOnly)
++FireHipAnimation:UAnimMontage* 
+
+UPROPERTY(EditDefaultsOnly)
++FireAimAnimation:UAnimMontage*
+
+-Health:UHealthComponent*
+
+-SkeletalMesh:USkeletalMeshComponent*
+
+-AnimationInstance:UCharacterBaseAnimation*
+
+*UPROPERTY( Replicated)*
+*-CurrentWeapon:AWeaponBase* *
+
+*UPROPERTY( Replicated)*
+*-bIsAiming:bool *
+
+*UPROPERTY( Replicated)*
+*-bIsFiring:bool*
+
+*UPROPERTY( Replicated)*
+*- bHasWeapon : bool*
+
+*UPROPERTY(EditAnywhere, Replicated, Category = Movement)*
+*- CurrentFacing : FVector*
+--
++Move(Direction:FVector , Scale:float):void
+
++Fire(Toggle:bool ):void 
+
++Aim(Toggle:bool ):void 
+
++Interact(Actor:AActor*):void 
+
++GetSkeletalMesh(): USkeletalMeshComponent*
+
+*+ ApplyDamage(DamageCauser : AActor*) : void*
+
+UFUNCTION(BlueprintPure)
++GetCurrentWeapon():AWeaponBase*
+
+#ACharacterBase()
+
+#&lt;virtual override&gt;PostInitializeComponents(): void
+
+#&lt;virtual override&gt;BeginPlay():void
+
+#&lt;virtual override&gt; Tick(DeltaTime:float):void 
+
+UFUNCTION()
+#OnWeaponFired():void 
+
+*UFUNCTION(NetMulticast, Unreliable)*
+*+ NMC_PlayWeaponFiringAnimation():void*
+
+UFUNCTION()
+#OnDeath():void
+
+*UFUNCTION(NetMulticast, Reliable)*
+*# NMC_OnClientDeath():void*
+
+*UFUNCTION(Server, Reliable, WithValidation)*
+*-Server_HoldWeapon(Weapon:AWeaponBase*):void*
+
+*UFUNCTION(Server, Reliable, WithValidation)*
+*-Server_DropWeapon():void*
+
+*- AttachCurrentWeapon():void*
+
+*UFUNCTION(Reliable, Server, WithValidation)*
+*- Server_ChangeFacing(TargetVector : FVector) : void*
+
+*UFUNCTION(Reliable, Server, WithValidation)*
+*- Server_SetIsAiming(val : bool) : void*
+
+*UFUNCTION(Reliable, Server, WithValidation)*
+*- Server_SetIsFiring(val : bool) : void*
+
+*- SetHasWeapon(val : bool) : void*
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>2288</x>
+      <y>168</y>
+      <w>352</w>
+      <h>608</h>
+    </coordinates>
+    <panel_attributes>AWeaponBase
+--
+*UPROPERTY(Replicated, EditDefaultsOnly)*
+*+FireRate:float*
+
+*UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly)*
+*+MaximumAmmo:int*
+
+*UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly)*
+*+CurrentAmmo:int*
+
+UPROPERTY(EditDefaultsOnly)
++ProjectileType:UClass*
+
+UPROPERTY(BlueprintAssignable)
++OnWeaponFired:FOnWeaponFiredSignature
+
+-FireTimer:FTimerHandle
+
+-Primitive:UPrimitiveComponent*
+
+-Muzzle:UArrowComponent*
+--
+#AWeaponBase()
+
++Attach(Character:ACharacterBase*):void 
+
++Detach():void
+
++PullTrigger():void
+
++ReleaseTrigger():void
+
++GetMuzzleLocation():FVector
+
+#&lt;virtual override&gt; PostInitializeComponents():void
+
+#&lt;virtual override&gt; BeginPlay():void
+
+#&lt;virtual override&gt; Tick(DeltaTime:float): void
+
+#Fire():void
+
+*UFUNCTION(Server, Reliable, WithValidation)*
+*# Server_Fire() : void*
+		
+-ClearFireTimer():void
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>2776</x>
+      <y>144</y>
+      <w>488</w>
+      <h>336</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+AProjectileBase
+--
+UPROPERTY(EditDefaultsOnly)
++Damage:float
+
+UPROPERTY(EditDefaultsOnly)
++Speed:float
+
+UPROPERTY(EditDefaultsOnly)
++LifeTime:float
+
+-Timer:FTimerHandle
+--
+#AProjectileBase()
+
+#&lt;virtual override&gt; PostInitializeComponents(): void
+
+#&lt;virtual override&gt; BeginPlay(): void
+
+#&lt;virtual override&gt;Tick(DeltaTime:float): void
+
+UFUNCTION()
+#OnActorHit(Self:AActor*, Other: AActor*, NormalImpulse:FVector, Hit:const FHitResult&amp;):void
+
+-DestroySelf():void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1928</x>
+      <y>1792</y>
+      <w>336</w>
+      <h>328</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;UAnimInstance&gt;&gt;
+UCharacterBaseAnimation
+--
+*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)*
+*+bHasWeapon:bool*
+
+*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated)*
+*+bIsAiming:bool*
+
+UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
++bIsMoving:bool
+
+UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
++MovementSpeed:float
+
+UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
++StrafingRotation:float
+
+#OwningPawn:APawn*
+--
+#UCharacterBaseAnimation()
+
+#&lt;virtual override&gt; NativeInitializeAnimation():void
+
+#&lt;virtual override&gt; NativeUpdateAnimation(DeltaTime:float):void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>2304</x>
+      <y>0</y>
+      <w>256</w>
+      <h>104</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+AItemBase
+--
+
+--
+#AItemBase()
+#&lt;virtual override&gt; BeginPlay():void
+#&lt;virtual override&gt; Tick(DeltaTime:float): void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1152</x>
+      <y>1784</y>
+      <w>672</w>
+      <h>328</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;UActorComponent&gt;&gt;
+UHealthComponent
+--
+UPROPERTY(BlueprintReadOnly)
++MaximumHealth:float
+
+*UPROPERTY(BlueprintReadOnly, Replicated)*
+*+CurrentHealth:float*
+
+UPROPERTY(BlueprintAssignable)
++OnDeath:FOnDeathSignature
+--
++UHealthComponent()
+
++IsDead():bool
+
+#&lt;virtual override&gt;InitializeComponent():void 
+
+#&lt;virtual override&gt;BeginPlay():  void
+
+#&lt;virtual override&gt;TickComponent(DeltaTime:float, TickType:ELevelTick, ThisTickFunction:FActorComponentTickFunction*) : void
+
+UFUNCTION()
+# OnTakeAnyDamage(DamagedActor:AActor*, Damage:float, DamageType:const UDamageType*, InstigatedBy:AController*, DamageCauser:AActor*):void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1528</x>
+      <y>168</y>
+      <w>176</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+has</panel_attributes>
+    <additional_attributes>10.0;20.0;200.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2416</x>
+      <y>96</y>
+      <w>24</w>
+      <h>88</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2088</x>
+      <y>232</y>
+      <w>216</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=0..1
+Can have(Holds a Weapon)</panel_attributes>
+    <additional_attributes>10.0;20.0;250.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2632</x>
+      <y>304</y>
+      <w>160</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+m2=1
+m1=0..n
+Spawns(Shoots)</panel_attributes>
+    <additional_attributes>180.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1936</x>
+      <y>1272</y>
+      <w>40</w>
+      <h>536</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+Has</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;650.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1712</x>
+      <y>1272</y>
+      <w>40</w>
+      <h>528</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+Has</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;640.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>2928</x>
+      <y>112</y>
+      <w>80</w>
+      <h>16</h>
+    </coordinates>
+    <panel_attributes>SimpleClass</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>632</x>
+      <y>1888</y>
+      <w>312</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathSignature)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>2752</x>
+      <y>552</y>
+      <w>344</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponFiredSignature)</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>936</x>
+      <y>1888</y>
+      <w>232</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+Has Event(Delegate)</panel_attributes>
+    <additional_attributes>270.0;20.0;10.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>2632</x>
+      <y>544</y>
+      <w>128</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;-
+m1=1
+m2=1
+Has Event(Delegate)</panel_attributes>
+    <additional_attributes>10.0;20.0;140.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>800</x>
+      <y>576</y>
+      <w>536</w>
+      <h>1016</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;ACharacterBase&gt;&gt;
+AAICharacterBase
+--
+UPROPERTY(VisibleAnywhere, Category = "Components")
+# PawnSensingComp : UPawnSensingComponent*
+
+# OriginalRotator : FRotator
+
+# TimerHandle_ResetOrientation : FTimerHandle
+# TimerHandle_ResetPatrol : FTimerHandle
+
+UPROPERTY(ReplicatedUsing = OnRep_GuardState)
+# GuardState : EAIState
+
+UPROPERTY(EditInstanceOnly, Category = "AI")
+# bPatrol : bool
+
+UPROPERTY(EditInstanceOnly, Category = "AI", meta = (EditCondition = "bPatrol"))
+# PatrolPoints : TArray&lt;AActor*&gt;
+
+# CurrentPatrolPoint : AActor*
+
+# WeaponBlueprint : TSubclassOf&lt;AWeaponBase&gt;
+
+UPROPERTY(Replicated)
+# LastSeenTime : float
+
+UPROPERTY(Replicated)
+# LastHeardTime : float
+
+UPROPERTY(EditDefaultsOnly, Category = "AI")
+# SenseTimeOut : float
+
+UPROPERTY(Replicated)
+# bSensedTarget : bool
+
+UPROPERTY(VisibleAnyWhere, BlueprintReadWrite, Category = "Enemy stats")
++ isActive : bool = false
+
++ spawner : AEnemySpawner* = nullptr;
+	
++ waitingZone : FVector
+
+- TargetActor :  AActor*
+
+--
++ AAICharacterBase()
+
+# &lt;virtual override&gt; BeginPlay() :  void
+
+UFUNCTION()
+# OnPawnSeen(SeenPawn : APawn*) : void
+
+UFUNCTION()
+# OnNoiseHeard(NoiseInstigator : APawn*, Location : const FVector&amp;, Volume : float) : void
+
+UFUNCTION()
+# ResetOrientation() : void
+
+UFUNCTION()
+#	ResetPatrol() : void
+
+UFUNCTION()
+# OnRep_GuardState() : void
+
+UFUNCTION(BlueprintImplementableEvent, Category = "AI")
+# OnStateChanged(NewState : EAIState) : void
+
+# SetGuardState(NewState : EAIState) : void
+
+# MoveToNextPatrolPoint() : void
+
+# &lt;virtual override&gt; OnDeath(KilledBy : AActor*) : void
+
+# &lt;virtual override&gt; PostInitializeComponents() : void
+
++ &lt;virtual override&gt; Tick(DeltaTime : float) : void
+
++ Reset() : void
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1328</x>
+      <y>640</y>
+      <w>376</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>450.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>0</x>
+      <y>672</y>
+      <w>440</w>
+      <h>336</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;AActor&gt;&gt;
+AEnemySpawner
+--
+UPROPERTY(EditDefaultsOnly, Category = "Enemy blueprint")
++ EnemyBP : TSubclassOf&lt;AAICharacterBase&gt;
+
+- SpawnPoints : TArray&lt;AActor*&gt;
+
+- EnemyPool : TQueue &lt;AAICharacterBase*&gt;
+
+- NextSpawn : size_t = 0;
+
+- Count : int = 0;
+
+--
++ AEnemySpawner()
+
++ ReleaseEnemy(enemy : AAICharacterBase*) : void
+
++ &lt;virtual override&gt; Tick(DeltaTime : float) : void
+
+# &lt;virtual override&gt; BeginPlay() : void
+
+UFUNCTION()
+# Spawn() : void
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>432</x>
+      <y>744</y>
+      <w>384</w>
+      <h>40</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-
+m1=1
+m2=0..*
+Contains a Pool Of</panel_attributes>
+    <additional_attributes>10.0;20.0;460.0;20.0</additional_attributes>
+  </element>
+</diagram>
